@@ -1,6 +1,13 @@
 Resources:
+  # A Queue to catch messages that could not be consumed by the notify lambda
+  NotificationDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: 'STAGE_NAME-QUEUE_NAME-dlq'
+
   SQSQueue:
     Type: "AWS::SQS::Queue"
+    DependsOn: NotificationDLQ
     Properties:
       QueueName: STAGE_NAME-QUEUE_NAME
       DelaySeconds : QUEUE_DELAY
@@ -9,12 +16,6 @@ Resources:
           - NotificationDLQ
           - Arn
         maxReceiveCount: 10
-
-  # A Queue to catch messages that could not be consumed by the notify lambda
-  NotificationDLQ:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 'STAGE_NAME-QUEUE_NAME-dlq'
 
   ProxyApi:
     Type: AWS::ApiGateway::RestApi
