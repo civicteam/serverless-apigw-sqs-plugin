@@ -7,12 +7,14 @@ Resources:
 
   SQSQueue:
     Type: "AWS::SQS::Queue"
-    DependsOn: NotificationDLQ
+    DependsOn: DeadLetterQueue
     Properties:
       QueueName: STAGE_NAME-QUEUE_NAME
       DelaySeconds : QUEUE_DELAY
       RedrivePolicy:
-        deadLetterTargetArn: "${DeadLetterQueue.Arn}"
+        deadLetterTargetArn: !GetAtt
+          - DeadLetterQueue
+          - Arn
         maxReceiveCount: 10
 
   ProxyApi:
