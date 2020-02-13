@@ -4,6 +4,17 @@ Resources:
     Properties:
       QueueName: STAGE_NAME-QUEUE_NAME
       DelaySeconds : QUEUE_DELAY
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt
+          - NotificationDLQ
+          - Arn
+        maxReceiveCount: 10
+
+  # A Queue to catch messages that could not be consumed by the notify lambda
+  NotificationDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: 'STAGE_NAME-QUEUE_NAME-dlq'
 
   ProxyApi:
     Type: AWS::ApiGateway::RestApi
